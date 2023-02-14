@@ -76,10 +76,31 @@ Full JOIN rating AS r
 ON s.movie_id = r.movie_id
 full join distributors AS d
 ON d.distributor_id= s.domestic_distributor_id
+Where d.headquarters NOT LIKE 'CA%'
 
+select film_title, imdb_rating
+from specs, rating
+Where movie_id IN
+(select headquarters, company_name
+from distributors
+where headquarters <> 'CA'
+order BY headquarters DESC)
 
-
-select*
-From distributors, rating
 
 7. Which have a higher average rating, movies which are over two hours long or movies which are under two hours?
+
+select *
+from specs
+
+select t1.rating,t1.under_2, t2.over_2
+from (select mpaa_rating AS rating,
+	count(length_in_min) AS under_2
+	 from specs
+	 where length_in_min <120
+	 Group By rating) AS t1,
+	 (select mpaa_rating AS rating, 
+	 Count(length_in_min) AS over_2
+	 from specs
+	 where length_in_min > 120
+	 Group BY rating) AS t2
+	 Where t1.rating = t2.rating
